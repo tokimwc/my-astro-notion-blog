@@ -1,0 +1,58 @@
+---
+import { NUMBER_OF_POSTS_PER_PAGE } from '../../server-constants.js'
+import {
+  getPosts,
+  getRankedPosts,
+  getAllTags,
+  getNumberOfPages,
+} from '../../lib/notion/client.js'
+import Layout from '../../layouts/Layout.astro.jsx'
+import NoContents from '../../components/NoContents.astro.jsx'
+import PostDate from '../../components/PostDate.astro.jsx'
+import PostTags from '../../components/PostTags.astro.jsx'
+import PostTitle from '../../components/PostTitle.astro.jsx'
+import PostFeaturedImage from '../../components/PostFeaturedImage.astro.jsx'
+import PostExcerpt from '../../components/PostExcerpt.astro.jsx'
+import ReadMoreLink from '../../components/ReadMoreLink.astro.jsx'
+import Pagination from '../../components/Pagination.astro.jsx'
+import BlogPostsLink from '../../components/BlogPostsLink.astro.jsx'
+import BlogTagsLink from '../../components/BlogTagsLink.astro.jsx'
+import styles from '../../styles/blog.module.css'
+
+const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
+  getPosts(NUMBER_OF_POSTS_PER_PAGE),
+  getRankedPosts(),
+  getAllTags(),
+  getNumberOfPages(),
+])
+---
+
+<Layout>
+  <div slot="main" class={styles.main}>
+    {
+      posts.length === 0 ? (
+        <NoContents contents={posts} />
+      ) : (
+        posts.map((post) => (
+          <div class={styles.post} key={post.Slug}>
+            <PostDate post={post} />
+            <PostTags post={post} />
+            <PostTitle post={post} />
+            <PostFeaturedImage post={post} />
+            <PostExcerpt post={post} />
+            <ReadMoreLink post={post} />
+          </div>
+        ))
+      )
+    }
+
+    <footer>
+      <Pagination currentPage={1} numberOfPages={numberOfPages} />
+    </footer>
+  </div>
+
+  <div slot="aside" class={styles.aside}>
+    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
+    <BlogTagsLink heading="Categories" tags={tags} />
+  </div>
+</Layout>
