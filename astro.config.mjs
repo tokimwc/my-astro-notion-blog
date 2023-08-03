@@ -41,4 +41,8 @@ export default defineConfig({
     FeaturedImageDownloader(),
     PublicNotionCopier(),
   ],
+  env: {
+    NOTION_API_SECRET: process.env.NOTION_API_SECRET,
+    DATABASE_ID: process.env.DATABASE_ID,
+  },
 });
